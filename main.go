@@ -20,6 +20,8 @@ func main() {
 
 		for _, addr := range iface.Addresses {
 			fmt.Printf("	IP: %s | Маска: %s\n", addr.IP, addr.Mask)
+			fmt.Printf("	Префикс: %d\n", addr.Prefix)
+			fmt.Printf("	Подсеть: %s\n", addr.Network)
 		}
 	}
 	fmt.Println("Vantrel v0.2.0")

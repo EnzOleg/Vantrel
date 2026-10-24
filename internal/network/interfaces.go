@@ -1,20 +1,22 @@
 package network
 
 import (
-	"net"
 	"log"
+	"net"
 )
 
 type Address struct {
-	IP string
-	Mask string
+	IP      string
+	Mask    string
+	Prefix  int
+	Network string
 }
 
 type NetworkInterface struct {
-	Name string
-	MTU int
-	MAC string
-	Flags string
+	Name      string
+	MTU       int
+	MAC       string
+	Flags     string
 	Addresses []Address
 }
 
@@ -33,9 +35,9 @@ func Interfaces() ([]NetworkInterface, error) {
 		}
 
 		item := NetworkInterface{
-			Name: ifi.Name,
-			MTU: ifi.MTU,
-			MAC: ifi.HardwareAddr.String(),
+			Name:  ifi.Name,
+			MTU:   ifi.MTU,
+			MAC:   ifi.HardwareAddr.String(),
 			Flags: ifi.Flags.String(),
 		}
 
@@ -45,9 +47,10 @@ func Interfaces() ([]NetworkInterface, error) {
 				continue
 			}
 
-			address := Address{
-				IP: ipNet.IP.String(),
-				Mask: net.IP(ipNet.Mask).String(),
+			address, err := ParseAddress(ipNet)
+			if err != nil {
+				log.Printf("Не удалось обработать адрес интерфейса %s: %v", ifi.Name, err)
+				continue
 			}
 
 			item.Addresses = append(item.Addresses, address)
